@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Rental Admin Panel</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <header>
         <div class="header-container">
@@ -27,7 +29,11 @@
                     <button id="addRecord">Add Record</button>
                     <button id="updateRecord">Update Record</button>
                     <button id="deleteRecord">Delete Record</button>
-                    <button id="calculate">Perform Calculation</button>
+                    <div class="group-tworow">
+                        <button id="calculate">Perform Calculation</button>
+                        <button id="countByStatus">Count Rentals By Status</button>
+                    </div>
+
                 </div>
                 <div id="results"></div>
             </section>
@@ -54,10 +60,19 @@
                     <input type="number" id="updateCarPrice" placeholder="Price" required>
                     <input type="text" id="updateCarStatus" placeholder="Status" required>
                     <textarea id="updateCarDescription" placeholder="Description" required></textarea>
-                    <button type="submit">Submit</button>
-                    <button type="button" id="cancelUpdate">Cancel</button>
+                    <div class="group-tworow">
+                        <button type="submit">Submit</button>
+                        <button type="button" id="cancelUpdate">Cancel</button>
+                    </div>
+
                 </form>
             </div>
+            <div id="statusCountResults"></div>
+
+
+
+
+
 
             <!-- Раздел бронирования -->
             <section id="bookings" class="section">
@@ -130,10 +145,20 @@
                     <button type="button" id="cancelPayment">Cancel</button>
                 </form>
             </div>
+
+            <section>
+                <div class="buttons btn-ctr">
+                    <button onclick="location.href='table.html?endpoint=/combined-data'">Show Combined Data</button>
+                </div>
+            </section>
+
         </div>
+
+
     </main>
 
-
+    <div id="combinedDataResults"></div>
     <script src="script.js"></script>
 </body>
+
 </html>

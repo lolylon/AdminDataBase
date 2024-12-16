@@ -303,3 +303,81 @@ document.getElementById('cancelPayment').addEventListener('click', () => {
     document.getElementById('paymentFormContainer').style.display = 'none';
     document.getElementById('paymentForm').reset();
 });
+
+
+// Функция для отображения подсчета по статусу
+function displayStatusCount(data) {
+    const resultsDiv = document.getElementById('statusCountResults');
+    if (!data || data.length === 0) {
+        resultsDiv.innerHTML = 'No data found';
+        return;
+    }
+    
+    let table = '<table><tr><th>Status</th><th>Count</th></tr>';
+    
+    data.forEach(item => {
+        table += `<tr><td>${item.status}</td><td>${item.count}</td></tr>`;
+    });
+    
+    table += '</table>';
+    resultsDiv.innerHTML = table;
+}
+
+// Обработчик для кнопки "Count Rentals By Status"
+document.getElementById('countByStatus').addEventListener('click', () => {
+    fetchData('/rentals/status-count').then(data => {
+        displayStatusCount(data);
+    }).catch(error => {
+        console.error('Error:', error);
+        document.getElementById('statusCountResults').textContent = 'An error occurred';
+    });
+});
+
+
+// Функция для отображения объединенных данных
+function displayCombinedData(data) {
+    const resultsDiv = document.getElementById('combinedDataResults');
+    if (!data || data.length === 0) {
+        resultsDiv.innerHTML = 'No data found';
+        return;
+    }
+    
+    let table = '<table><tr><th>Rental ID</th><th>Car Name</th><th>Price</th><th>Status</th><th>Description</th><th>Booking ID</th><th>Booking Date</th><th>Return Date</th><th>Customer ID</th><th>Full Name</th><th>Phone Number</th><th>Email</th><th>Address</th><th>Payment ID</th><th>Amount</th><th>Payment Date</th><th>Payment Method</th></tr>';
+    
+    data.forEach(item => {
+        table += `<tr>
+                    <td>${item.rental_id}</td>
+                    <td>${item.car_name}</td>
+                    <td>${item.price}</td>
+                    <td>${item.status}</td>
+                    <td>${item.description}</td>
+                    <td>${item.booking_id}</td>
+                    <td>${item.booking_date}</td>
+                    <td>${item.return_date}</td>
+                    <td>${item.customer_id}</td>
+                    <td>${item.full_name}</td>
+                    <td>${item.phone_number}</td>
+                    <td>${item.email}</td>
+                    <td>${item.address}</td>
+                    <td>${item.payment_id}</td>
+                    <td>${item.amount}</td>
+                    <td>${item.payment_date}</td>
+                    <td>${item.payment_method}</td>
+                  </tr>`;
+    });
+    
+    table += '</table>';
+    resultsDiv.innerHTML = table;
+}
+
+// Обработчик для кнопки "Show Combined Data"
+document.getElementById('showCombinedData').addEventListener('click', () => {
+    fetchData('/combined-data').then(data => {
+        displayCombinedData(data);
+    }).catch(error => {
+        console.error('Error:', error);
+        document.getElementById('combinedDataResults').textContent = 'An error occurred';
+    });
+});
+
+

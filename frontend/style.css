@@ -23,7 +23,6 @@ main {
 /* Контейнеры разделов */
 .dashboard {
     width: 90%;
-    max-width: 1200px;
     margin: 20px auto;
     background: #ffffff;
     border-radius: 8px;
@@ -177,4 +176,21 @@ footer {
     bottom: 0;
     width: 100%;
     font-size: 0.9rem;
+}
+
+
+.group-tworow {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+}
+
+.showfulldata {
+    text-align: center;
+}
+
+.btn-ctr {
+    display: flex;
+    justify-content: center;
 }

@@ -341,6 +341,23 @@ app.get("/payments", async (req, res) => {
     }
 });
 
+// Get count of rentals by status
+app.get("/rentals/status-count", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT status, COUNT(*) AS count
+            FROM rentals
+            GROUP BY status
+        `);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error('Error fetching rental counts by status:', err);
+        res.status(500).send("Error fetching rental counts by status");
+    }
+});
+
+
+
 // Get a payment by ID
 app.get("/payments/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
@@ -407,6 +424,28 @@ app.delete("/payments/:id(\\d+)", async (req, res) => {
         res.status(500).send("Error deleting payment");
     }
 });
+
+// Get combined data from all tables
+app.get("/combined-data", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                rentals.id AS rental_id, rentals.car_name, rentals.price, rentals.status, rentals.description,
+                bookings.id AS booking_id, bookings.booking_date, bookings.return_date,
+                customers.id AS customer_id, customers.full_name, customers.phone_number, customers.email, customers.address,
+                payments.id AS payment_id, payments.amount, payments.payment_date, payments.payment_method
+            FROM rentals
+            LEFT JOIN bookings ON rentals.id = bookings.rental_id
+            LEFT JOIN customers ON bookings.customer_id = customers.id
+            LEFT JOIN payments ON bookings.id = payments.booking_id
+        `);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error('Error fetching combined data:', err);
+        res.status(500).send("Error fetching combined data");
+    }
+});
+
 
 
 // Fallback route for non-matching routes
