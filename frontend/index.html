@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Car Rental Admin Panel</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -16,16 +16,14 @@
     </header>
 
     <main>
-        <!-- Панель управления -->
         <div class="dashboard">
-            <!-- Раздел для управления арендой автомобилей -->
             <section id="car-rentals" class="section">
                 <h2>Car Rentals</h2>
                 <div class="buttons">
                     <button id="showData">Show Rentals</button>
                     <button id="searchData">Search</button>
-                    <input type="text" id="carNameInput" placeholder="Car Name">
-                    <input type="text" id="statusInput" placeholder="Status">
+                    <input type="text" id="carNameInput" placeholder="Car Name" />
+                    <input type="text" id="statusInput" placeholder="Status" />
                     <button id="addRecord">Add Record</button>
                     <button id="updateRecord">Update Record</button>
                     <button id="deleteRecord">Delete Record</button>
@@ -33,48 +31,38 @@
                         <button id="calculate">Perform Calculation</button>
                         <button id="countByStatus">Count Rentals By Status</button>
                     </div>
-
                 </div>
                 <div id="results"></div>
             </section>
 
-            <!-- Форма добавления новой машины -->
             <div id="formContainer" class="form-container">
                 <h3>Add New Car</h3>
                 <form id="addCarForm">
-                    <input type="text" id="newCarName" placeholder="Car Name" required>
-                    <input type="number" id="newCarPrice" placeholder="Price" required>
-                    <input type="text" id="newCarStatus" placeholder="Status" required>
+                    <input type="text" id="newCarName" placeholder="Car Name" required />
+                    <input type="number" id="newCarPrice" placeholder="Price" required />
+                    <input type="text" id="newCarStatus" placeholder="Status" required />
                     <textarea id="newCarDescription" placeholder="Description" required></textarea>
                     <button type="submit">Submit</button>
                     <button type="button" id="cancelAdd">Cancel</button>
                 </form>
             </div>
 
-            <!-- Форма обновления машины -->
             <div id="updateFormContainer" class="form-container">
                 <h3>Update Car</h3>
                 <form id="updateCarForm">
-                    <input type="hidden" id="updateCarId">
-                    <input type="text" id="updateCarName" placeholder="Car Name" required>
-                    <input type="number" id="updateCarPrice" placeholder="Price" required>
-                    <input type="text" id="updateCarStatus" placeholder="Status" required>
+                    <input type="hidden" id="updateCarId" />
+                    <input type="text" id="updateCarName" placeholder="Car Name" required />
+                    <input type="number" id="updateCarPrice" placeholder="Price" required />
+                    <input type="text" id="updateCarStatus" placeholder="Status" required />
                     <textarea id="updateCarDescription" placeholder="Description" required></textarea>
                     <div class="group-tworow">
                         <button type="submit">Submit</button>
                         <button type="button" id="cancelUpdate">Cancel</button>
                     </div>
-
                 </form>
             </div>
             <div id="statusCountResults"></div>
 
-
-
-
-
-
-            <!-- Раздел бронирования -->
             <section id="bookings" class="section">
                 <h2>Bookings</h2>
                 <div class="buttons">
@@ -84,21 +72,19 @@
                 <div id="bookingsResults"></div>
             </section>
 
-            <!-- Форма для добавления или обновления бронирования -->
             <div id="bookingFormContainer" class="form-container">
                 <h3 id="bookingFormTitle">Add New Booking</h3>
                 <form id="bookingForm">
-                    <input type="hidden" id="bookingId">
-                    <input type="number" id="bookingCustomerId" placeholder="Customer ID" required>
-                    <input type="number" id="bookingRentalId" placeholder="Rental ID" required>
-                    <input type="date" id="bookingDate" placeholder="Booking Date" required>
-                    <input type="date" id="returnDate" placeholder="Return Date">
+                    <input type="hidden" id="bookingId" />
+                    <input type="number" id="bookingCustomerId" placeholder="Customer ID" required />
+                    <input type="number" id="bookingRentalId" placeholder="Rental ID" required />
+                    <input type="date" id="bookingDate" placeholder="Booking Date" required />
+                    <input type="date" id="returnDate" placeholder="Return Date" />
                     <button type="submit">Submit</button>
                     <button type="button" id="cancelBooking">Cancel</button>
                 </form>
             </div>
 
-            <!-- Раздел клиентов -->
             <section id="customers" class="section">
                 <h2>Customers</h2>
                 <div class="buttons">
@@ -108,21 +94,19 @@
                 <div id="customersResults"></div>
             </section>
 
-            <!-- Форма добавления или обновления клиента -->
             <div id="customerFormContainer" class="form-container">
                 <h3 id="customerFormTitle">Add New Customer</h3>
                 <form id="customerForm">
-                    <input type="hidden" id="customerId">
-                    <input type="text" id="customerName" placeholder="Full Name" required>
-                    <input type="text" id="customerPhone" placeholder="Phone Number" required>
-                    <input type="email" id="customerEmail" placeholder="Email">
+                    <input type="hidden" id="customerId" />
+                    <input type="text" id="customerName" placeholder="Full Name" required />
+                    <input type="text" id="customerPhone" placeholder="Phone Number" required />
+                    <input type="email" id="customerEmail" placeholder="Email" />
                     <textarea id="customerAddress" placeholder="Address" required></textarea>
                     <button type="submit">Submit</button>
                     <button type="button" id="cancelCustomer">Cancel</button>
                 </form>
             </div>
 
-            <!-- Раздел платежей -->
             <section id="payments" class="section">
                 <h2>Payments</h2>
                 <div class="buttons">
@@ -132,15 +116,14 @@
                 <div id="paymentsResults"></div>
             </section>
 
-            <!-- Форма добавления или обновления платежа -->
             <div id="paymentFormContainer" class="form-container">
                 <h3 id="paymentFormTitle">Add New Payment</h3>
                 <form id="paymentForm">
-                    <input type="hidden" id="paymentId">
-                    <input type="number" id="paymentBookingId" placeholder="Booking ID" required>
-                    <input type="number" id="paymentAmount" placeholder="Amount" required>
-                    <input type="date" id="paymentDate" placeholder="Payment Date" required>
-                    <input type="text" id="paymentMethod" placeholder="Payment Method" required>
+                    <input type="hidden" id="paymentId" />
+                    <input type="number" id="paymentBookingId" placeholder="Booking ID" required />
+                    <input type="number" id="paymentAmount" placeholder="Amount" required />
+                    <input type="date" id="paymentDate" placeholder="Payment Date" required />
+                    <input type="text" id="paymentMethod" placeholder="Payment Method" required />
                     <button type="submit">Submit</button>
                     <button type="button" id="cancelPayment">Cancel</button>
                 </form>
@@ -148,13 +131,12 @@
 
             <section>
                 <div class="buttons btn-ctr">
-                    <button onclick="location.href='table.html?endpoint=/combined-data'">Show Combined Data</button>
+                    <button onclick="location.href='table.html?endpoint=/combined-data'">
+                        Show Combined Data
+                    </button>
                 </div>
             </section>
-
         </div>
-
-
     </main>
 
     <div id="combinedDataResults"></div>

@@ -40,3 +40,21 @@ CREATE TABLE payments (
     payment_date DATE NOT NULL,
     payment_method VARCHAR(50)
 );
+
+
+
+CREATE OR REPLACE FUNCTION update_rental_status()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE rentals
+    SET status = 'Available'
+    WHERE id = OLD.rental_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER after_booking_delete
+AFTER DELETE ON bookings
+FOR EACH ROW
+EXECUTE FUNCTION update_rental_status();

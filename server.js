@@ -6,11 +6,9 @@ const path = require("path");
 const app = express();
 const port = 3000;
 
-// Middleware
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "frontend")));
 
-// PostgreSQL connection
 const pool = new Pool({
     user: "postgres",
     host: "localhost",
@@ -19,7 +17,6 @@ const pool = new Pool({
     port: 5432,
 });
 
-// Search rentals by parameters
 app.get("/rentals/search", async (req, res) => {
     const { car_name, status } = req.query;
     let query = "SELECT * FROM rentals WHERE 1=1";
@@ -35,27 +32,23 @@ app.get("/rentals/search", async (req, res) => {
     }
 
     try {
-        console.log('Executing query:', query); // Логирование запроса
-        console.log('With parameters:', params); // Логирование параметров
+        console.log('Executing query:', query); 
+        console.log('With parameters:', params); 
         const result = await pool.query(query, params);
-        console.log('Query result:', result.rows); // Логирование результата запроса
+        console.log('Query result:', result.rows); 
         if (result.rows.length > 0) {
             res.status(200).json(result.rows);
         } else {
             res.status(404).send("No rentals found");
         }
     } catch (err) {
-        console.error('Error executing query:', err); // Логирование ошибки
+        console.error('Error executing query:', err); 
         res.status(500).send("Error searching rentals");
     }
 });
 
 
 
-
-
-
-// Get all rentals
 app.get("/rentals", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM rentals");
@@ -66,7 +59,6 @@ app.get("/rentals", async (req, res) => {
     }
 });
 
-// Get a rental by ID
 app.get("/rentals/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -81,7 +73,7 @@ app.get("/rentals/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Add a new rental
+
 app.post("/rentals", async (req, res) => {
     const { car_name, price, status, description } = req.body;
 
@@ -97,7 +89,7 @@ app.post("/rentals", async (req, res) => {
     }
 });
 
-// Update a rental
+
 app.put("/rentals/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     const { car_name, price, status, description } = req.body;
@@ -119,7 +111,7 @@ app.put("/rentals/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Delete a rental
+
 app.delete("/rentals/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
 
@@ -140,7 +132,6 @@ app.delete("/rentals/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Calculate total price of rentals
 app.get("/rentals/calculate", async (req, res) => {
     const { ids } = req.query;
     let query = "SELECT SUM(price) AS total_price FROM rentals";
@@ -164,12 +155,11 @@ app.get("/rentals/calculate", async (req, res) => {
     }
 });
 
-// Additional routes for related tables// Get all customers
-// Get all customers
+
 app.get("/customers", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM customers");
-        console.log(result.rows); // Логирование данных перед отправкой на клиент
+        console.log(result.rows); 
         res.status(200).json(result.rows);
     } catch (err) {
         console.error(err);
@@ -178,7 +168,6 @@ app.get("/customers", async (req, res) => {
 });
 
 
-// Get a customer by ID
 app.get("/customers/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -193,9 +182,7 @@ app.get("/customers/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Add a new customer
-// Add a new customer
-// Add a new customer
+
 app.post("/customers", async (req, res) => {
     console.log('Received POST request to /customers with body:', req.body);
     const { full_name, phone_number, email, address } = req.body;
@@ -212,8 +199,6 @@ app.post("/customers", async (req, res) => {
 });
 
 
-
-// Update a customer
 app.put("/customers/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     const { full_name, phone_number, email, address } = req.body;
@@ -232,7 +217,7 @@ app.put("/customers/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Delete a customer
+
 app.delete("/customers/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -251,7 +236,7 @@ app.delete("/customers/:id(\\d+)", async (req, res) => {
 });
 
 
-// Get all bookings
+
 app.get("/bookings", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM bookings");
@@ -262,7 +247,7 @@ app.get("/bookings", async (req, res) => {
     }
 });
 
-// Get a booking by ID
+
 app.get("/bookings/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -277,7 +262,7 @@ app.get("/bookings/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Add a new booking
+
 app.post("/bookings", async (req, res) => {
     const { customer_id, rental_id, booking_date, return_date } = req.body;
     try {
@@ -292,18 +277,26 @@ app.post("/bookings", async (req, res) => {
     }
 });
 
-// Update a booking
+
 app.put("/bookings/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     const { customer_id, rental_id, booking_date, return_date } = req.body;
+
     try {
+        const rentalCheck = await pool.query("SELECT status FROM rentals WHERE id = $1", [rental_id]);
+        if (rentalCheck.rows.length === 0) {
+            return res.status(404).send("Rental not found");
+        }
+        if (rentalCheck.rows[0].status === 'Rent') {
+            console.log(`Car with ID ${rental_id} is already rented`);
+            return res.status(400).send("Car is already rented");
+        }
+
         const result = await pool.query(
             "UPDATE bookings SET customer_id = $1, rental_id = $2, booking_date = $3, return_date = $4 WHERE id = $5 RETURNING *",
             [customer_id, rental_id, booking_date, return_date, id]
         );
-        if (result.rows.length === 0) {
-            return res.status(404).send("Booking not found");
-        }
+        
         res.status(200).json(result.rows[0]);
     } catch (err) {
         console.error(err);
@@ -311,7 +304,7 @@ app.put("/bookings/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Delete a booking
+
 app.delete("/bookings/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -322,15 +315,14 @@ app.delete("/bookings/:id(\\d+)", async (req, res) => {
         if (result.rows.length === 0) {
             return res.status(404).send("Booking not found");
         }
-        res.status(200).json({ message: "Booking deleted successfully" });
+        res.status(200).json({ message: "Booking deleted successfully", booking: result.rows[0] });
     } catch (err) {
-        console.error(err);
+        console.error('Error deleting booking:', err);
         res.status(500).send("Error deleting booking");
     }
 });
 
 
-// Get all payments
 app.get("/payments", async (req, res) => {
     try {
         const result = await pool.query("SELECT * FROM payments");
@@ -341,7 +333,6 @@ app.get("/payments", async (req, res) => {
     }
 });
 
-// Get count of rentals by status
 app.get("/rentals/status-count", async (req, res) => {
     try {
         const result = await pool.query(`
@@ -356,9 +347,6 @@ app.get("/rentals/status-count", async (req, res) => {
     }
 });
 
-
-
-// Get a payment by ID
 app.get("/payments/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -373,7 +361,6 @@ app.get("/payments/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Add a new payment
 app.post("/payments", async (req, res) => {
     const { booking_id, amount, payment_date, payment_method } = req.body;
     try {
@@ -388,7 +375,24 @@ app.post("/payments", async (req, res) => {
     }
 });
 
-// Update a payment
+app.post("/trigger-delete-booking/:id(\\d+)", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(
+            "DELETE FROM bookings WHERE id = $1 RETURNING *",
+            [id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).send("Booking not found");
+        }
+        res.status(200).json({ message: "Booking deleted successfully, rental status updated", booking: result.rows[0] });
+    } catch (err) {
+        console.error('Error triggering delete booking:', err);
+        res.status(500).send("Error triggering delete booking");
+    }
+});
+
+
 app.put("/payments/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     const { booking_id, amount, payment_date, payment_method } = req.body;
@@ -407,7 +411,6 @@ app.put("/payments/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Delete a payment
 app.delete("/payments/:id(\\d+)", async (req, res) => {
     const { id } = req.params;
     try {
@@ -425,7 +428,6 @@ app.delete("/payments/:id(\\d+)", async (req, res) => {
     }
 });
 
-// Get combined data from all tables
 app.get("/combined-data", async (req, res) => {
     try {
         const result = await pool.query(`
@@ -447,15 +449,39 @@ app.get("/combined-data", async (req, res) => {
 });
 
 
+app.post("/bookings", async (req, res) => {
+    const { customer_id, rental_id, booking_date, return_date } = req.body;
 
-// Fallback route for non-matching routes
+    try {
+        const rentalCheck = await pool.query("SELECT status FROM rentals WHERE id = $1", [rental_id]);
+        if (rentalCheck.rows.length === 0) {
+            return res.status(404).send("Rental not found");
+        }
+        if (rentalCheck.rows[0].status === 'Rent') {
+            console.log(`Car with ID ${rental_id} is already rented`);
+            return res.status(400).send("Car is already rented");
+        }
+
+        const result = await pool.query(
+            "INSERT INTO bookings (customer_id, rental_id, booking_date, return_date) VALUES ($1, $2, $3, $4) RETURNING *",
+            [customer_id, rental_id, booking_date, return_date]
+        );
+        
+        await pool.query("UPDATE rentals SET status = 'Rent' WHERE id = $1", [rental_id]);
+        
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error adding booking");
+    }
+});
+
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "index.html"));
 });
 
-// Start server
 
-// Start server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

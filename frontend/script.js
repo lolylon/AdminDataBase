@@ -16,8 +16,7 @@ async function fetchData(endpoint, method = 'GET', body = null) {
     }
 }
 
-// Функция для отображения данных в виде таблицы
-// Function to display data in a table
+
 function displayTable(data, type) {
     const resultsDiv = document.getElementById('results');
     if (!data || data.length === 0) {
@@ -59,7 +58,6 @@ function displayTable(data, type) {
     resultsDiv.innerHTML = table;
 }
 
-// Show all customers
 document.getElementById('showCustomers').addEventListener('click', () => {
     fetchData('/customers').then(data => {
         displayTable(data, 'customers');
@@ -67,7 +65,6 @@ document.getElementById('showCustomers').addEventListener('click', () => {
 });
 
 
-// Обновим обработчики событий
 document.getElementById('showData').addEventListener('click', () => {
     fetchData('/rentals').then(data => {
         displayTable(data);
@@ -91,13 +88,10 @@ document.getElementById('searchData').addEventListener('click', () => {
 
 
 
-
-// Show form to add a new rental
 document.getElementById('addRecord').addEventListener('click', () => {
     document.getElementById('formContainer').style.display = 'block';
 });
 
-// Add a new rental
 document.getElementById('addCarForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const newRental = {
@@ -115,16 +109,14 @@ document.getElementById('addCarForm').addEventListener('submit', (e) => {
     document.getElementById('addCarForm').reset();
 });
 
-// Cancel adding a new rental
 document.getElementById('cancelAdd').addEventListener('click', () => {
     document.getElementById('formContainer').style.display = 'none';
     document.getElementById('addCarForm').reset();
 });
 
-// Show form to update a rental
 document.getElementById('updateRecord').addEventListener('click', async () => {
-    const rentalId = prompt('Enter Rental ID to update:'); // Запросить ID у пользователя
-    const rental = await fetchData(`/rentals/${rentalId}`); // Ждем данных о записи
+    const rentalId = prompt('Enter Rental ID to update:'); 
+    const rental = await fetchData(`/rentals/${rentalId}`); 
     if (rental) {
         document.getElementById('updateCarId').value = rental.id;
         document.getElementById('updateCarName').value = rental.car_name;
@@ -137,7 +129,6 @@ document.getElementById('updateRecord').addEventListener('click', async () => {
     }
 });
 
-// Update a rental
 document.getElementById('updateCarForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const updatedRental = {
@@ -156,15 +147,13 @@ document.getElementById('updateCarForm').addEventListener('submit', (e) => {
     document.getElementById('updateCarForm').reset();
 });
 
-// Cancel updating a rental
 document.getElementById('cancelUpdate').addEventListener('click', () => {
     document.getElementById('updateFormContainer').style.display = 'none';
     document.getElementById('updateCarForm').reset();
 });
 
-// Delete a rental
 document.getElementById('deleteRecord').addEventListener('click', () => {
-    const rentalId = prompt('Enter Rental ID to delete:'); // Запросить ID у пользователя
+    const rentalId = prompt('Enter Rental ID to delete:'); 
     fetchData(`/rentals/${rentalId}`, 'DELETE').then(data => {
         if (data) {
             document.getElementById('results').textContent = JSON.stringify(data, null, 2);
@@ -172,7 +161,6 @@ document.getElementById('deleteRecord').addEventListener('click', () => {
     });
 });
 
-// Perform calculation: Calculate total price of selected cars
 document.getElementById('calculate').addEventListener('click', () => {
     const selectedCars = prompt('Enter the IDs of the cars to calculate, separated by commas (or leave blank to calculate the total price of all cars):');
     
@@ -194,55 +182,70 @@ document.getElementById('calculate').addEventListener('click', () => {
     });
 });
 
-// Show all bookings
 document.getElementById('showBookings').addEventListener('click', () => {
     fetchData('/bookings').then(data => {
         displayTable(data, 'bookings');
     });
 });
 
-// Show form to add a new booking
 document.getElementById('addBooking').addEventListener('click', () => {
     document.getElementById('bookingFormContainer').style.display = 'block';
     document.getElementById('bookingFormTitle').innerText = 'Add New Booking';
 });
 
-// Add a new booking
-document.getElementById('bookingForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newBooking = {
-        customer_id: document.getElementById('bookingCustomerId').value,
-        rental_id: document.getElementById('bookingRentalId').value,
-        booking_date: document.getElementById('bookingDate').value,
-        return_date: document.getElementById('returnDate').value
-    };
-    fetchData('/bookings', 'POST', newBooking).then(data => {
-        if (data) {
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newBooking = {
+            customer_id: document.getElementById('bookingCustomerId').value,
+            rental_id: document.getElementById('bookingRentalId').value,
+            booking_date: document.getElementById('bookingDate').value,
+            return_date: document.getElementById('returnDate').value
+        };
+        fetchData('/bookings', 'POST', newBooking).then(data => {
             displayTable([data], 'bookings');
-        }
+        }).catch(error => {
+            console.error('Error adding booking:', error);
+            if (error.message.includes('400')) {
+                document.getElementById('resultsBookings').textContent = 'Error adding booking: Car is already rented';
+            } else {
+                document.getElementById('resultsBookings').textContent = 'Error adding booking';
+            }
+        });
+        document.getElementById('bookingFormContainer').style.display = 'none';
+        document.getElementById('bookingForm').reset();
     });
-    document.getElementById('bookingFormContainer').style.display = 'none';
-    document.getElementById('bookingForm').reset();
+
+    async function fetchData(endpoint, method = 'GET', body = null) {
+        const options = { method, headers: { 'Content-Type': 'application/json' } };
+        if (body) options.body = JSON.stringify(body);
+
+        try {
+            const response = await fetch(endpoint, options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    }
 });
 
-// Cancel adding/updating a booking
+
 document.getElementById('cancelBooking').addEventListener('click', () => {
     document.getElementById('bookingFormContainer').style.display = 'none';
     document.getElementById('bookingForm').reset();
 });
 
-
-
-
-// Show form to add a new customer
 document.getElementById('addCustomer').addEventListener('click', () => {
     document.getElementById('customerFormContainer').style.display = 'block';
     document.getElementById('customerFormTitle').innerText = 'Add New Customer';
 });
 
-// Add a new customer
-// Add a new customer
-// Add a new customer
+
 document.getElementById('customerForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const newCustomer = {
@@ -261,26 +264,26 @@ document.getElementById('customerForm').addEventListener('submit', (e) => {
 });
 
 
-// Cancel adding/updating a customer
+
 document.getElementById('cancelCustomer').addEventListener('click', () => {
     document.getElementById('customerFormContainer').style.display = 'none';
     document.getElementById('customerForm').reset();
 });
 
-// Show all payments
+
 document.getElementById('showPayments').addEventListener('click', () => {
     fetchData('/payments').then(data => {
         displayTable(data, 'payments');
     });
 });
 
-// Show form to add a new payment
+
 document.getElementById('addPayment').addEventListener('click', () => {
     document.getElementById('paymentFormContainer').style.display = 'block';
     document.getElementById('paymentFormTitle').innerText = 'Add New Payment';
 });
 
-// Add a new payment
+
 document.getElementById('paymentForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const newPayment = {
@@ -298,14 +301,14 @@ document.getElementById('paymentForm').addEventListener('submit', (e) => {
     document.getElementById('paymentForm').reset();
 });
 
-// Cancel adding/updating a payment
+
 document.getElementById('cancelPayment').addEventListener('click', () => {
     document.getElementById('paymentFormContainer').style.display = 'none';
     document.getElementById('paymentForm').reset();
 });
 
 
-// Функция для отображения подсчета по статусу
+
 function displayStatusCount(data) {
     const resultsDiv = document.getElementById('statusCountResults');
     if (!data || data.length === 0) {
@@ -323,7 +326,6 @@ function displayStatusCount(data) {
     resultsDiv.innerHTML = table;
 }
 
-// Обработчик для кнопки "Count Rentals By Status"
 document.getElementById('countByStatus').addEventListener('click', () => {
     fetchData('/rentals/status-count').then(data => {
         displayStatusCount(data);
@@ -334,7 +336,7 @@ document.getElementById('countByStatus').addEventListener('click', () => {
 });
 
 
-// Функция для отображения объединенных данных
+
 function displayCombinedData(data) {
     const resultsDiv = document.getElementById('combinedDataResults');
     if (!data || data.length === 0) {
@@ -370,7 +372,7 @@ function displayCombinedData(data) {
     resultsDiv.innerHTML = table;
 }
 
-// Обработчик для кнопки "Show Combined Data"
+
 document.getElementById('showCombinedData').addEventListener('click', () => {
     fetchData('/combined-data').then(data => {
         displayCombinedData(data);
@@ -381,3 +383,55 @@ document.getElementById('showCombinedData').addEventListener('click', () => {
 });
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('triggerDeleteBooking').addEventListener('click', () => {
+        const bookingId = prompt('Enter Booking ID to delete:'); 
+        if (bookingId) {
+            fetchData(`/trigger-delete-booking/${bookingId}`, 'POST').then(data => {
+                document.getElementById('triggerResults').textContent = JSON.stringify(data, null, 2);
+            }).catch(error => {
+                console.error('Error triggering delete booking:', error);
+                document.getElementById('triggerResults').textContent = 'An error occurred';
+            });
+        } else {
+            document.getElementById('triggerResults').textContent = 'Booking ID is required';
+        }
+    });
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    function deleteBooking() {
+        const bookingId = prompt('Enter Booking ID to delete:'); 
+        if (bookingId) {
+            fetchData(`/bookings/${bookingId}`, 'DELETE').then(data => {
+                document.getElementById('resultsBookings').textContent = JSON.stringify(data, null, 2);
+            }).catch(error => {
+                console.error('Error deleting booking:', error);
+                document.getElementById('resultsBookings').textContent = 'An error occurred';
+            });
+        } else {
+            document.getElementById('resultsBookings').textContent = 'Booking ID is required';
+        }
+    }
+
+    document.getElementById('deleteBooking').addEventListener('click', deleteBooking);
+});
+
+async function fetchData(endpoint, method = 'GET', body = null) {
+    const options = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) options.body = JSON.stringify(body);
+
+    try {
+        const response = await fetch(endpoint, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}

@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Получаем данные из URL параметров
     const urlParams = new URLSearchParams(window.location.search);
     const endpoint = urlParams.get('endpoint');
 
-    // Функция для загрузки данных
     async function loadData(endpoint) {
         const response = await fetch(endpoint);
         if (!response.ok) {
@@ -13,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         displayTable(data);
     }
 
-    // Функция для отображения данных в таблице
     function displayTable(data) {
         const tableContainer = document.getElementById('tableContainer');
         if (!data || data.length === 0) {
@@ -23,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let table = '<table><tr>';
         
-        // Динамически добавляем заголовки таблицы
         const keys = Object.keys(data[0]);
         keys.forEach(key => {
             table += `<th>${key}</th>`;
@@ -43,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         tableContainer.innerHTML = table;
     }
 
-    // Загрузка данных с указанного endpoint
     if (endpoint) {
         loadData(endpoint).catch(error => {
             console.error('Error loading data:', error);
